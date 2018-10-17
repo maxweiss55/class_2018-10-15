@@ -16,9 +16,34 @@ library(janitor)
 
 
 
-e_18 <- read_excel("class_enrollment_summary_by_term_10_12.xlsx") 
+e_18 <- read_excel("class_enrollment_summary_by_term_10_12.xlsx", skip = 2) %>%
+  clean_names() %>%
+  filter(!is.na(course_name)) %>%
+  distinct(course_id, .keep_all = TRUE)
 
+e_17 <- read_excel("class_enrollment_summary_by_term_10.20.17.xlsx", skip = 2) %>%
+  clean_names() %>%
+  filter(!is.na(course_name)) %>%
+  distinct(course_id, .keep_all = TRUE)
 
+e_16 <- read_excel("copy_of_class_enrollment_summary_by_term_10.06.2016.xlsx", skip = 2) %>%
+  clean_names() %>%
+  filter(!is.na(course_name))
+
+e_15 <- read_excel("class_enrollment_summary_by_term_10.15.18.xlsx") %>%
+  clean_names() %>%
+  filter(!is.na(course_name))
+
+x <- left_join(e_18, e_15, by = ("course_id"), suffix = c(".18", ".15")) %>%
+  mutate(enrollment_change = total.18 - total.15)
+
+x %>%
+  select(course_id, course_name.18, total.18, total.15) %>%
+  mutate(enrollment_change = total.18 - total.15) %>%
+  arrange(desc(enrollment_change)) %>%
+  slice(1:10)
+
+x
 
 ```
 
